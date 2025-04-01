@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Agendamento - Secretaria</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white shadow-xl rounded-2xl p-8 max-w-md w-full">
+    <h2 class="text-2xl font-bold mb-6 text-center text-blue-700">Agende seu Atendimento</h2>
+    <form id="agendamentoForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Assunto</label>
+        <input type="text" name="assunto" required class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Nome completo</label>
+        <input type="text" name="nome" required class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Telefone (WhatsApp)</label>
+        <input type="tel" name="telefone" required placeholder="(xx) xxxxx-xxxx" class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700">Data desejada</label>
+        <input type="date" name="data" required class="mt-1 p-2 w-full border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400">
+      </div>
+      <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-xl hover:bg-blue-700 transition">Agendar</button>
+    </form>
+    <p id="mensagem" class="text-center mt-4 text-green-600 hidden">Agendamento enviado com sucesso!</p>
+  </div>
+
+  <script>
+    const form = document.getElementById('agendamentoForm');
+    const mensagem = document.getElementById('mensagem');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      const webhookURL = 'https://hook.us2.make.com/ug2e2qfrjp08vmykgt9xdotcbbslq173';
+
+      try {
+        await fetch(webhookURL, {
+          method: 'POST',
+          body: JSON.stringify(data),
+          headers: { 'Content-Type': 'application/json' }
+        });
+        mensagem.classList.remove('hidden');
+        form.reset();
+      } catch (error) {
+        alert('Erro ao enviar agendamento. Tente novamente.');
+      }
+    });
+  </script>
+</body>
+</html>
