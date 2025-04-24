@@ -1,98 +1,94 @@
 
-<!doctype html>
-<html lang=pt-br>
+<!DOCTYPE html>
+<html lang="pt-br">
 <head>
-<meta charset=UTF-8>
-<meta name=viewport content="width=device-width,initial-scale=1">
-<title>Painel Principal - Canal</title>
-<link href=https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css rel=stylesheet>
-<script src=https://cdn.jsdelivr.net/npm/chart.js></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel de Análise</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
-<header class="bg-white shadow">
-<div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-<h1 class="text-xl font-bold text-blue-600">📊 Painel de Análise</h1>
-<nav class=space-x-4>
-<a href=index.html class="text-blue-600 hover:underline">🏠 Início</a>
-<a href=inscritos.html class="text-blue-600 hover:underline">📈 Inscritos</a>
-<a href=visualizacoes.html class="text-blue-600 hover:underline">📊 Visualizações</a>
-<a href=videos.html class="text-blue-600 hover:underline">🎬 Vídeos</a>
-<a href=video.html class="text-blue-600 hover:underline">🎥 Análise de Vídeos</a>
-<a href=roteiro.html class="text-blue-600 hover:underline">📝 Roteirização</a>
-<a href=ao-vivo.html class="text-blue-600 hover:underline">🔴 Ao Vivo</a>
-<a href=publicidade.html class="text-blue-600 hover:underline">💼 Publicidade</a>
-</nav>
-</div>
-</header>
-<main class="max-w-6xl mx-auto p-6 space-y-8">
-<section>
-<h2 class="text-lg font-semibold text-gray-700">Canal em análise:</h2>
-<p id=canalInfo class="text-blue-500 font-mono">Carregando...</p>
-</section>
-<section>
-<h2 class="text-lg font-semibold text-gray-700">📈 Evolução de Visualizações</h2>
-<canvas id=chartViews></canvas>
-</section>
-</main>
-<script>document.addEventListener("contextmenu",(e=>e.preventDefault())),document.addEventListener("keydown",(function(e){("F12"===e.key||e.ctrlKey&&e.shiftKey&&"I"===e.key||e.ctrlKey&&"U"===e.key)&&(e.preventDefault(),alert("Ação bloqueada por segurança."))}))</script>
-<script>document.addEventListener("DOMContentLoaded",(function(){let e=localStorage.getItem("canal_jairinho_url");e||(e="https://www.youtube.com/@FalaJairinho");const t=e.split("/").pop().replace("@","");document.getElementById("canalInfo").innerText=t+" ("+e+")";const a=document.getElementById("chartViews").getContext("2d");new Chart(a,{type:"line",data:{labels:["Jan","Fev","Mar","Abr","Mai","Jun"],datasets:[{label:"Visualizações (milhares)",data:[500,700,1100,1300,1800,2100],borderColor:"#2563eb",backgroundColor:"rgba(37, 99, 235, 0.1)",fill:!0,tension:.4}]},options:{responsive:!0,scales:{y:{beginAtZero:!0}}}})}))</script>
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-blue-600">📊 Painel de Análise</h1>
+    <nav class="space-x-4 text-sm text-blue-600">
+      <a href="index.html">Início</a>
+      <a href="inscritos.html">Inscritos</a>
+      <a href="visualizacoes.html">Visualizações</a>
+      <a href="videos.html">Vídeos</a>
+      <a href="video.html">Análise de Vídeos</a>
+      <a href="roteiro.html">Roteirização</a>
+      <a href="ao-vivo.html">🔴 Ao Vivo</a>
+      <a href="publicidade.html">📦 Publicidade</a>
+    </nav>
+  </header>
 
-<script>
-  document.addEventListener("DOMContentLoaded", async function () {
-    const url = localStorage.getItem("canal_jairinho_url") || "";
-    const rede = localStorage.getItem("canal_rede") || "youtube";
-    const canalInfo = document.getElementById("canalInfo");
+  <main class="max-w-6xl mx-auto p-6">
+    <section class="mb-6">
+      <p class="text-sm text-gray-700">Canal em análise:</p>
+      <p id="canalStatus" class="text-sm font-semibold text-gray-600">Carregando dados...</p>
+    </section>
 
-    if (rede === "youtube") {
-      const nomeUsuario = url.split("@")[1] || "FalaJairinho";
-      const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg";
+    <section>
+      <h2 class="text-lg font-bold text-gray-800 mb-2">☑️ Evolução de Visualizações</h2>
+      <canvas id="graficoVisualizacoes" height="200"></canvas>
+    </section>
+  </main>
 
-      try {
-        const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=@${nomeUsuario}&type=channel&key=${apiKey}`);
-        const buscaJson = await busca.json();
-        const channelId = buscaJson.items?.[0]?.snippet?.channelId || buscaJson.items?.[0]?.id?.channelId;
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("youtube_token");
+      const url = localStorage.getItem("canal_jairinho_url") || "";
+      const canalStatus = document.getElementById("canalStatus");
 
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`);
-        const json = await res.json();
-        const canal = json.items?.[0];
-
-        if (canal) {
-          const stats = canal.statistics;
-          canalInfo.innerHTML = `
-            <strong>@${nomeUsuario}</strong><br/>
-            👥 ${parseInt(stats.subscriberCount).toLocaleString()} inscritos<br/>
-            👁️ ${parseInt(stats.viewCount).toLocaleString()} visualizações<br/>
-            🎬 ${parseInt(stats.videoCount).toLocaleString()} vídeos
-          `;
-        } else {
-          canalInfo.innerText = "Erro ao buscar estatísticas.";
-        }
-      } catch (error) {
-        canalInfo.innerText = "Erro ao conectar à API do YouTube.";
+      if (!token || !url.includes("@")) {
+        canalStatus.innerText = "";
+        return;
       }
 
-    } else if (rede === "instagram") {
-      const nome = url.split("instagram.com/")[1]?.replace("/", "") || "@usuario";
-      canalInfo.innerHTML = `
-        📸 <strong>@${nome}</strong><br/>
-        👥 72.300 seguidores<br/>
-        🖼️ 315 publicações<br/>
-        💬 Engajamento estimado: 4,8%
-      `;
+      const nomeUsuario = url.split("@")[1];
+      canalStatus.innerHTML = `<strong>@${nomeUsuario}</strong>`;
 
-    } else if (rede === "tiktok") {
-      const nome = url.split("@")[1] || "usuario";
-      canalInfo.innerHTML = `
-        🎵 <strong>@${nome}</strong><br/>
-        👥 102.000 seguidores<br/>
-        🎥 184 vídeos<br/>
-        ❤️ 2.1M curtidas
-      `;
-    } else {
-      canalInfo.innerText = "Rede não reconhecida.";
-    }
-  });
-</script>
+      try {
+        const hoje = new Date().toISOString().split("T")[0];
+        const inicio = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+        const analyticsUrl = `https://youtubeanalytics.googleapis.com/v2/reports?dimensions=day&metrics=views&startDate=${inicio}&endDate=${hoje}&ids=channel==MINE&sort=day`;
 
+        const response = await fetch(analyticsUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const json = await response.json();
+        if (!json.rows) throw new Error("Sem dados");
+
+        const labels = json.rows.map(r => r[0]);
+        const dados = json.rows.map(r => r[1]);
+
+        const ctx = document.getElementById("graficoVisualizacoes").getContext("2d");
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "Visualizações (reais)",
+              data: dados,
+              borderColor: "#2563eb",
+              backgroundColor: "rgba(37, 99, 235, 0.1)",
+              fill: true,
+              tension: 0.4
+            }]
+          }
+        });
+      } catch (e) {
+        document.getElementById("graficoVisualizacoes").remove();
+        const erro = document.createElement("p");
+        erro.className = "text-sm text-gray-500 mt-4";
+        erro.innerText = "⚠️ Dados não disponíveis. Verifique a conexão com o OAuth.";
+        canalStatus.after(erro);
+      }
+    });
+  </script>
 </body>
 </html>
