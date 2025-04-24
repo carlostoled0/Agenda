@@ -7,6 +7,17 @@
   <title>Detalhamento de Visualizações</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script src="canal_utils.js"></script>
+  <script>
+    async function carregarCanalId(callback) {
+      const url = localStorage.getItem("canal_jairinho_url");
+      if (!url) return console.warn("URL do canal não definida.");
+      const channelId = await obterChannelId(url);
+      if (channelId && typeof callback === "function") callback(channelId);
+    }
+  </script>
+
 </head>
 <body class="bg-gray-100 text-gray-800">
   <header class="bg-white shadow-md p-4 flex items-center justify-between">
