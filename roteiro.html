@@ -1,83 +1,36 @@
 
-<!DOCTYPE html>
-<html lang="pt-br">
+<!doctype html>
+<html lang=pt-br>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Roteirização Inteligente</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script>
-    function gerarRoteiro() {
-      const tema = document.getElementById("tema").value.trim();
-      const estilo = document.getElementById("estilo").value;
-      const saida = document.getElementById("saidaRoteiro");
-
-      if (!tema) {
-        alert("Informe o tema para gerar o roteiro.");
-        return;
-      }
-
-      let abertura = "", corpo = "", encerramento = "";
-
-      if (estilo === "sério") {
-        abertura = `Introdução séria sobre "${tema}".`;
-        corpo = `Discussão aprofundada com dados e responsabilidade sobre o tema "${tema}".`;
-        encerramento = `Conclusão firme e objetiva com chamada à reflexão sobre "${tema}".`;
-      } else if (estilo === "engraçado") {
-        abertura = `Comece com uma piada leve relacionada a "${tema}".`;
-        corpo = `Mantenha o tom descontraído com humor e trocadilhos sobre "${tema}".`;
-        encerramento = `Feche com uma provocação divertida ou bordão relacionado a "${tema}".`;
-      } else if (estilo === "inspirador") {
-        abertura = `Comece com uma história real emocionante sobre "${tema}".`;
-        corpo = `Incorpore mensagens de superação e propósito relacionadas a "${tema}".`;
-        encerramento = `Encerre com uma frase de impacto ou citação motivadora.`;
-      } else {
-        abertura = `Você irá escrever manualmente o roteiro para: "${tema}".`;
-        corpo = `Use seu estilo pessoal para desenvolver o assunto "${tema}".`;
-        encerramento = `Conclua com a sua assinatura criativa.`;
-      }
-
-      saida.innerHTML = `
-        <div class="bg-white p-4 rounded shadow space-y-4 mt-4">
-          <h3 class="text-lg font-semibold text-blue-600">🟦 Abertura</h3>
-          <p>${abertura}</p>
-          <h3 class="text-lg font-semibold text-blue-600">🟨 Desenvolvimento</h3>
-          <p>${corpo}</p>
-          <h3 class="text-lg font-semibold text-blue-600">🟥 Encerramento</h3>
-          <p>${encerramento}</p>
-        </div>
-      `;
-    }
-  </script>
+<meta charset=UTF-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Roteirização</title>
+<link href=https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css rel=stylesheet>
+<script src=https://cdn.jsdelivr.net/npm/chart.js></script>
+<script>document.addEventListener("contextmenu",(e=>e.preventDefault())),document.addEventListener("keydown",(function(e){("F12"===e.key||e.ctrlKey&&e.shiftKey&&"I"===e.key||e.ctrlKey&&"U"===e.key)&&(e.preventDefault(),alert("Ação bloqueada por segurança."))}))</script>
 </head>
 <body class="bg-gray-100 text-gray-800">
-  <header class="bg-white shadow-md p-4 flex items-center justify-between">
-    <h1 class="text-xl font-bold text-blue-600">🎬 Roteirização com IA</h1>
-    <a href="index.html" class="flex items-center text-sm text-blue-600 hover:underline">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-      </svg>
-      Voltar
-    </a>
-  </header>
+<header class="bg-white shadow-md p-4 flex items-center justify-between">
+<h1 class="text-2xl font-bold text-blue-600">📝 Roteirização</h1>
+<a href=index.html class="flex items-center text-sm text-blue-600 hover:underline">
+<svg xmlns=http://www.w3.org/2000/svg class="h-4 w-4 mr-1" fill=none viewBox="0 0 24 24" stroke=currentColor>
+<path stroke-linecap=round stroke-linejoin=round stroke-width=2 d="M15 19l-7-7 7-7"/>
+</svg>
+Voltar
+</a>
+</header>
+<main class="p-6 max-w-6xl mx-auto">
+Ferramenta para gerar roteiros inteligentes para entrevistador e entrevistado.
 
-  <main class="max-w-4xl mx-auto p-6">
-    <div class="space-y-4">
-      <label class="block text-sm font-medium">Informe o tema do vídeo:</label>
-      <input id="tema" type="text" placeholder="Ex: Trabalho informal nas estações" class="w-full px-4 py-2 border rounded shadow focus:ring-2 focus:ring-blue-400" />
+<section class="mb-6">
+  <h2 class="text-xl font-bold text-blue-600 mb-2">🤖 Funcionalidades Inteligentes</h2>
+  <ul class="text-gray-700 text-sm list-disc pl-6 space-y-1">
+    <li>📝 Gerador de título com inteligência</li>
+    <li>🎥 Geração automática de roteiros por tema</li>
+    <li>💬 Simulador de engajamento (respostas automáticas)</li>
+  </ul>
+</section>
 
-      <label class="block text-sm font-medium mt-2">Escolha o estilo do roteiro:</label>
-      <select id="estilo" class="w-full px-4 py-2 border rounded shadow">
-        <option value="sério">Sério</option>
-        <option value="engraçado">Engraçado</option>
-        <option value="inspirador">Inspirador</option>
-        <option value="manual">Manual</option>
-      </select>
-
-      <button onclick="gerarRoteiro()" class="mt-4 bg-blue-600 text-white px-6 py-2 rounded shadow hover:bg-blue-700">🧠 Gerar Roteiro</button>
-
-      <div id="saidaRoteiro"></div>
-    </div>
-  </main>
+</main>
 </body>
 </html>
