@@ -2,83 +2,41 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel de Análise</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="canal_utils.js"></script>
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const savedUrl = localStorage.getItem("canal_jairinho_url");
-      const input = document.getElementById("canalUrl");
-      const status = document.getElementById("statusCanal");
+    async function carregarDadosCanal() {
+      const url = localStorage.getItem("canal_jairinho_url");
+      const canalSpan = document.getElementById("canalInfo");
+      if (!url || !canalSpan) return;
 
-      if (savedUrl && input) {
-        input.value = savedUrl;
-        status.textContent = "Canal em análise: " + savedUrl;
+      const channelId = await obterChannelId(url);
+      if (!channelId) {
+        canalSpan.innerHTML = "<span class='text-red-500'>Erro ao buscar estatísticas.</span>";
+        return;
       }
 
-      document.getElementById("salvarUrl").addEventListener("click", () => {
-        const url = input.value.trim();
-        if (url) {
-          localStorage.setItem("canal_jairinho_url", url);
-          status.textContent = "Canal em análise: " + url;
-          alert("URL salva!");
-        }
-      });
+      canalSpan.innerText = "@" + url.split("@")[1];
+      // buscarEstatisticas(channelId); // ativar depois se quiser usar API
+    }
 
-      document.getElementById("limparUrl").addEventListener("click", () => {
-        localStorage.removeItem("canal_jairinho_url");
-        location.reload();
-      });
-    });
+    window.onload = carregarDadosCanal;
   </script>
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-100 text-gray-800">
   <header class="bg-white shadow-md p-4">
-    <h1 class="text-2xl font-bold text-blue-600">📊 Painel de Análise</h1>
-    <div class="mt-4 flex gap-2 items-center">
-      <input id="canalUrl" type="url" placeholder="https://www.youtube.com/@FalaJairinho" class="w-96 px-3 py-2 border rounded focus:ring focus:outline-none">
-      <button id="salvarUrl" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar</button>
-      <button id="limparUrl" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">Limpar</button>
-    </div>
+    <h1 class="text-xl font-bold text-blue-600">📊 Painel de Análise</h1>
   </header>
 
-  <main class="p-6 max-w-6xl mx-auto">
-    <div class="mt-6">
-      <p id="statusCanal" class="mb-4 text-sm text-gray-700 font-medium">Canal em análise:</p>
-
-      <section class="bg-white p-6 rounded shadow mt-6">
-        <h2 class="text-lg font-semibold mb-4">📈 Evolução de Visualizações</h2>
-        <canvas id="graficoVisualizacoes" height="250"></canvas>
-      </section>
+  <main class="max-w-4xl mx-auto p-6">
+    <p class="mb-4 text-sm">Canal em análise: <span id="canalInfo" class="font-semibold text-blue-600"></span></p>
+    <div class="bg-white rounded p-4 shadow">
+      <h2 class="text-lg font-semibold mb-2">📈 Evolução de Visualizações</h2>
+      <canvas id="grafico"></canvas>
     </div>
   </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const ctx = document.getElementById("graficoVisualizacoes").getContext("2d");
-    new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun"],
-        datasets: [{
-          label: "Visualizações (milhares)",
-          data: [500, 700, 1100, 1250, 1800, 2100],
-          borderColor: "blue",
-          backgroundColor: "rgba(0, 123, 255, 0.1)",
-          fill: true,
-          tension: 0.4
-        }]
-      },
-      options: {
-        responsive: true,
-        scales: {
-          y: {
-            beginAtZero: true
-          }
-        }
-      }
-    });
-  </script>
 </body>
 </html>
