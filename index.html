@@ -6,37 +6,89 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel de Análise</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="canal_utils.js"></script>
-  <script>
-    async function carregarDadosCanal() {
-      const url = localStorage.getItem("canal_jairinho_url");
-      const canalSpan = document.getElementById("canalInfo");
-      if (!url || !canalSpan) return;
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-blue-600">📊 Painel de Análise</h1>
+    <nav class="space-x-4 text-sm text-blue-600">
+      <a href="index.html">Início</a>
+      <a href="inscritos.html">Inscritos</a>
+      <a href="visualizacoes.html">Visualizações</a>
+      <a href="videos.html">Vídeos</a>
+      <a href="video.html">Análise de Vídeos</a>
+      <a href="roteiro.html">Roteirização</a>
+      <a href="ao-vivo.html">🔴 Ao Vivo</a>
+      <a href="publicidade.html">📦 Publicidade</a>
+    </nav>
+  </header>
 
-      const channelId = await obterChannelId(url);
-      if (!channelId) {
-        canalSpan.innerHTML = "<span class='text-red-500'>Erro ao buscar estatísticas.</span>";
+  <main class="max-w-6xl mx-auto p-6">
+    <section class="mb-6">
+      <p class="text-sm text-gray-700">Canal em análise:</p>
+      <p id="canalStatus" class="text-sm font-semibold text-gray-600">Carregando dados...</p>
+    </section>
+
+    <section>
+      <h2 class="text-lg font-bold text-gray-800 mb-2">☑️ Evolução de Visualizações</h2>
+      <canvas id="graficoVisualizacoes" height="200"></canvas>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+      const token = localStorage.getItem("youtube_token");
+      const url = localStorage.getItem("canal_jairinho_url") || "";
+      const canalStatus = document.getElementById("canalStatus");
+
+      if (!token || !url.includes("@")) {
+        canalStatus.innerText = "";
         return;
       }
 
-      canalSpan.innerText = "@" + url.split("@")[1];
-      // buscarEstatisticas(channelId); // ativar depois se quiser usar API
-    }
+      const nomeUsuario = url.split("@")[1];
+      canalStatus.innerHTML = `<strong>@${nomeUsuario}</strong>`;
 
-    window.onload = carregarDadosCanal;
+      try {
+        const hoje = new Date().toISOString().split("T")[0];
+        const inicio = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split("T")[0];
+        const analyticsUrl = `https://youtubeanalytics.googleapis.com/v2/reports?dimensions=day&metrics=views&startDate=${inicio}&endDate=${hoje}&ids=channel==MINE&sort=day`;
+
+        const response = await fetch(analyticsUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        const json = await response.json();
+        if (!json.rows) throw new Error("Sem dados");
+
+        const labels = json.rows.map(r => r[0]);
+        const dados = json.rows.map(r => r[1]);
+
+        const ctx = document.getElementById("graficoVisualizacoes").getContext("2d");
+        new Chart(ctx, {
+          type: "line",
+          data: {
+            labels,
+            datasets: [{
+              label: "Visualizações (reais)",
+              data: dados,
+              borderColor: "#2563eb",
+              backgroundColor: "rgba(37, 99, 235, 0.1)",
+              fill: true,
+              tension: 0.4
+            }]
+          }
+        });
+      } catch (e) {
+        document.getElementById("graficoVisualizacoes").remove();
+        const erro = document.createElement("p");
+        erro.className = "text-sm text-gray-500 mt-4";
+        erro.innerText = "⚠️ Dados não disponíveis. Verifique a conexão com o OAuth.";
+        canalStatus.after(erro);
+      }
+    });
   </script>
-</head>
-<body class="bg-gray-100 text-gray-800">
-  <header class="bg-white shadow-md p-4">
-    <h1 class="text-xl font-bold text-blue-600">📊 Painel de Análise</h1>
-  </header>
-
-  <main class="max-w-4xl mx-auto p-6">
-    <p class="mb-4 text-sm">Canal em análise: <span id="canalInfo" class="font-semibold text-blue-600"></span></p>
-    <div class="bg-white rounded p-4 shadow">
-      <h2 class="text-lg font-semibold mb-2">📈 Evolução de Visualizações</h2>
-      <canvas id="grafico"></canvas>
-    </div>
-  </main>
 </body>
 </html>
