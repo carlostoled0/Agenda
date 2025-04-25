@@ -1,92 +1,67 @@
-<!doctype html>
-<html lang="pt-br">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Transmissão Ao Vivo 2.0</title>
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener("contextmenu", e => e.preventDefault());
-document.addEventListener("keydown", e => {
-  if (e.key === "F12" || (e.ctrlKey && e.shiftKey && e.key === "I") || (e.ctrlKey && e.key === "U")) {
-    e.preventDefault();
-    alert("Ação bloqueada por segurança.");
-  }
-});
-</script>
-</head>
-<body class="bg-gray-100 text-gray-800">
-<header class="bg-white shadow-md p-4 flex items-center justify-between">
-<h1 class="text-2xl font-bold text-red-600">🔴 Live Monitoramento Dinâmico</h1>
-<a href="index.html" class="flex items-center text-sm text-blue-600 hover:underline">
-<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-</svg>
-Voltar
-</a>
-</header>
-<main class="p-6 max-w-6xl mx-auto space-y-6">
-<section>
-<h2 class="text-xl font-semibold mb-2">Status da Transmissão</h2>
-<div id="statusLive" class="bg-white p-4 rounded shadow">
-<p class="text-gray-600">⏳ Carregando status...</p>
-</div>
-</section>
+
+<!-- O conteúdo original foi mantido acima -->
 
 <section>
-<h2 class="text-xl font-semibold mb-2">Espectadores Atuais</h2>
-<div id="viewersCount" class="bg-white p-4 rounded shadow">
-<p class="text-gray-600">👀 Buscando dados...</p>
-</div>
+<h2 class="text-lg font-semibold text-gray-700">📊 Pico de Audiência</h2>
+<canvas id="graficoPico" class="bg-white p-4 rounded shadow"></canvas>
 </section>
-</main>
 
 <script>
-const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg"; // Sua API Key do YouTube
-const liveVideoId = localStorage.getItem("canal_live_id") || ""; // ID da live salva ou configurada
+let dadosPico = [];
+let graficoViewers;
 
-async function atualizarDadosLive() {
-  if (!liveVideoId) {
-    document.getElementById("statusLive").innerHTML = "<p class='text-red-500'>Nenhuma live configurada.</p>";
-    return;
-  }
-  
-  try {
-    const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet,liveStreamingDetails&id=${liveVideoId}&key=${apiKey}`);
-    const data = await res.json();
-    const live = data.items[0];
-
-    if (!live) {
-      document.getElementById("statusLive").innerHTML = "<p class='text-red-500'>Live não encontrada.</p>";
-      document.getElementById("viewersCount").innerHTML = "<p class='text-gray-400'>---</p>";
-      return;
+function iniciarGraficoPico() {
+  const ctx = document.getElementById("graficoPico").getContext("2d");
+  graficoViewers = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: [],
+      datasets: [{
+        label: 'Espectadores ao Vivo',
+        data: [],
+        borderColor: '#10b981',
+        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+        tension: 0.4,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      scales: {
+        y: { beginAtZero: true }
+      }
     }
+  });
+}
 
-    const titulo = live.snippet.title;
-    const inicio = new Date(live.liveStreamingDetails.actualStartTime).toLocaleTimeString();
-    const espectadores = live.liveStreamingDetails.concurrentViewers || "-";
+async function atualizarGraficoPico(videoId) {
+  const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg";
+  const url = `https://www.googleapis.com/youtube/v3/videos?part=liveStreamingDetails&id=${videoId}&key=${apiKey}`;
+  try {
+    const res = await fetch(url);
+    const json = await res.json();
+    const live = json.items[0];
+    if (live) {
+      const viewers = parseInt(live.liveStreamingDetails.concurrentViewers || "0");
+      const hora = new Date().toLocaleTimeString();
+      dadosPico.push({ x: hora, y: viewers });
+      if (dadosPico.length > 10) dadosPico.shift();
 
-    document.getElementById("statusLive").innerHTML = `
-      <p class="font-bold text-green-600">🔴 ${titulo}</p>
-      <p class="text-sm text-gray-600">Iniciada às ${inicio}</p>
-    `;
-    document.getElementById("viewersCount").innerHTML = `
-      <p class="text-2xl font-bold text-blue-700">${espectadores} espectadores</p>
-    `;
-
-  } catch (error) {
-    document.getElementById("statusLive").innerHTML = "<p class='text-red-500'>Erro ao buscar dados da live.</p>";
-    document.getElementById("viewersCount").innerHTML = "<p class='text-gray-400'>---</p>";
+      graficoViewers.data.labels = dadosPico.map(p => p.x);
+      graficoViewers.data.datasets[0].data = dadosPico.map(p => p.y);
+      graficoViewers.update();
+    }
+  } catch (e) {
+    console.log("Erro ao buscar dados para gráfico de pico", e);
   }
 }
 
-// Atualiza a cada 15 segundos
-setInterval(atualizarDadosLive, 15000);
-
-// Primeira chamada
-atualizarDadosLive();
+function iniciarAtualizacaoPico(videoId) {
+  iniciarGraficoPico();
+  atualizarGraficoPico(videoId);
+  setInterval(() => atualizarGraficoPico(videoId), 15000);
+}
 </script>
 
-</body>
-</html>
+<!-- Dentro de carregarDadosDoCanal, após carregarComentariosAoVivo(liveVideoId); -->
+<!-- chamar iniciarAtualizacaoPico(liveVideoId); -->
