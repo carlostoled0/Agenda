@@ -64,19 +64,30 @@
       if (channelId) {
         carregarDados(channelId);
       } else if (nomeUsuario) {
+        // Primeira tentativa: forUsername
         try {
-          const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${nomeUsuario}&key=${apiKey}`);
-          const buscaJson = await busca.json();
-          channelId = buscaJson.items?.[0]?.id?.channelId || null;
-
-          if (channelId) {
-            carregarDados(channelId);
-          } else {
-            statusMsg.innerText = "⚠️ Canal não encontrado.";
-            fallback.classList.remove('hidden');
-          }
+          const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=id&forUsername=${nomeUsuario}&key=${apiKey}`);
+          const json = await res.json();
+          channelId = json.items?.[0]?.id || null;
         } catch {
-          statusMsg.innerText = "⚠️ Erro na busca. Tente colar o Channel ID.";
+          channelId = null;
+        }
+
+        if (!channelId) {
+          // Segunda tentativa: search fallback
+          try {
+            const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${nomeUsuario}&key=${apiKey}`);
+            const buscaJson = await busca.json();
+            channelId = buscaJson.items?.[0]?.id?.channelId || null;
+          } catch {
+            channelId = null;
+          }
+        }
+
+        if (channelId) {
+          carregarDados(channelId);
+        } else {
+          statusMsg.innerText = "⚠️ Canal não encontrado.";
           fallback.classList.remove('hidden');
         }
       }
