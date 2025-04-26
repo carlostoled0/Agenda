@@ -3,72 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Manutenção</title>
+  <title>Estamos em Manutenção</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    .bloco1-container, .bloco2-container {
-      position: absolute;
-      left: 0;
-      width: 100vw;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      padding: 10px;
-    }
-    .bloco1-container {
-      top: 47px;
-    }
-    .bloco2-container {
-      top: calc(50vh - 189px);
-    }
-    .linha-bloco1, .linha-bloco2 {
-      width: 100%;
-      border-top: 4px dashed #9ca3af;
-      margin-top: 10px;
-    }
-    .etiqueta-bloco1, .etiqueta-bloco2 {
-      background-color: #f3f4f6;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-weight: bold;
-      color: #374151;
-      font-size: 14px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 4px;
-    }
-  </style>
 </head>
-<body class="bg-gray-100 min-h-screen relative">
-  <div class="bloco1-container">
-    <div class="etiqueta-bloco1">Bloco 1</div>
-    <div class="linha-bloco1"></div>
-  </div>
-
-  <div class="bloco2-container">
-    <div class="etiqueta-bloco2">Bloco 2</div>
-    <div class="flex w-full mt-2 gap-2">
-      <input id="inputUrl" type="text" placeholder="Cole aqui a URL" class="p-2 flex-1 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-      <button onclick="salvarUrl()" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition">Salvar URL</button>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="text-center">
+    <div class="animate-pulse mb-6">
+      <svg class="mx-auto h-16 w-16 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3" />
+      </svg>
     </div>
-    <div id="historico-urls" class="mt-4 w-full flex flex-col gap-2"></div>
-    <div class="linha-bloco2"></div>
+    <h1 class="text-3xl font-bold text-gray-800 mb-4">Estamos em Manutenção</h1>
+    <p class="text-gray-600">Voltaremos em breve com novidades.</p>
   </div>
-
-  <script>
-    function salvarUrl() {
-      const input = document.getElementById('inputUrl');
-      const url = input.value.trim();
-      if (url) {
-        const historico = document.getElementById('historico-urls');
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.textContent = url;
-        link.className = 'text-blue-600 underline hover:text-blue-800';
-        historico.appendChild(link);
-        input.value = '';
-      }
-    }
-  </script>
 </body>
 </html>
