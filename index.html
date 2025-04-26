@@ -89,7 +89,7 @@ async function carregarDadosDoCanal() {
   if (url.includes("/channel/")) {
     channelId = url.split("/channel/")[1];
   } else if (url.includes("@")) {
-    const nomeUsuario = url.split("@")[1]; const buscaNome = `%40${nomeUsuario}`;
+    const nomeUsuario = url.split("@")[1];
     const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=@${nomeUsuario}&type=channel&key=${apiKey}`);
     const buscaJson = await busca.json();
     channelId = buscaJson.items?.[0]?.snippet?.channelId || buscaJson.items?.[0]?.id?.channelId;
