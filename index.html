@@ -57,7 +57,7 @@
 function atualizarCanal() {
   const input = document.getElementById("canal_url").value;
   const msg = document.getElementById("msg");
-  if (input.includes("/channel/")) {
+  if (input.includes("youtube.com/")) {
     localStorage.setItem("canal_url_principal", input);
     localStorage.setItem("canal_rede", "youtube");
     msg.innerText = "✅ Canal salvo. Atualizando painel...";
@@ -79,6 +79,43 @@ async function fallbackChannelId(username) {
 }
 
 async function carregarDadosDoCanal() {
+  const canalInfo = document.getElementById("canalInfo");
+  const url = localStorage.getItem("canal_url_principal") || "https://www.youtube.com/@FalaJairinho";
+  const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg";
+  canalInfo.innerText = "Carregando...";
+  
+  let channelId = "";
+  if (url.includes("/channel/")) {
+    channelId = url.split("/channel/")[1];
+  } else if (url.includes("@")) {
+    const nomeUsuario = url.split("@")[1];
+    const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${nomeUsuario}&key=${apiKey}`);
+    const buscaJson = await busca.json();
+    channelId = buscaJson.items?.[0]?.id?.channelId || null;
+  }
+
+  if (!channelId) {
+    canalInfo.innerText = "Canal não encontrado.";
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`);
+    const json = await res.json();
+    const canal = json.items?.[0];
+    if (canal) {
+      const stats = canal.statistics;
+      canalInfo.innerHTML = `<strong>@${canal.snippet.customUrl || canal.snippet.title}</strong><br/>
+      ${parseInt(stats.subscriberCount).toLocaleString()} inscritos<br/>
+      ${parseInt(stats.viewCount).toLocaleString()} visualizações<br/>
+      ${parseInt(stats.videoCount).toLocaleString()} vídeos`;
+    } else {
+      canalInfo.innerText = "Canal não encontrado.";
+    }
+  } catch (error) {
+    canalInfo.innerText = "Erro ao conectar à API.";
+  }
+}
   const url = localStorage.getItem("canal_url_principal") || "https://www.youtube.com/@FalaJairinho";
   const canalInfo = document.getElementById("canalInfo");
   const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg";
@@ -90,7 +127,7 @@ async function carregarDadosDoCanal() {
     channelId = url.split("/channel/")[1];
   } else if (url.includes("@")) {
     const nomeUsuario = url.split("@")[1];
-    const busca = await fetch("https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=" + channelId + "&key=" + apiKey);`https://www.googleapis.com/youtube/v3/search?part=snippet&q=@${nomeUsuario}&type=channel&key=${apiKey}`);
+    const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=@${nomeUsuario}&type=channel&key=${apiKey}`);
     const buscaJson = await busca.json();
     channelId = buscaJson.items?.[0]?.snippet?.channelId || buscaJson.items?.[0]?.id?.channelId;
 
