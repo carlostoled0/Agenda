@@ -5,105 +5,73 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Canal Inteligente</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body { font-family: 'Inter', sans-serif; }
-  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex items-center justify-center min-h-screen">
-  <div class="bg-white p-8 rounded shadow-md w-full max-w-md text-center space-y-4">
-    <h1 class="text-2xl font-bold">Buscar Canal do YouTube</h1>
-    <input id="canal_url" type="url" placeholder="https://www.youtube.com/@nome" class="border rounded w-full p-2" />
-    <button onclick="buscarCanal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded w-full">🔎 Buscar Canal</button>
-    <p id="status" class="text-sm text-gray-500"></p>
-    <input id="manual_input" type="text" placeholder="Cole o Channel ID..." class="border rounded w-full p-2" />
-    <button onclick="buscarManual()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded w-full">📋 Buscar Manualmente</button>
-  </div>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
 
-  <script>
-    const apiKey = "AIzaSyC4Hq-5MQNh21c0-yMJq0vOrFvyJRD_bg0";
+<div class="bg-white p-8 rounded shadow-md w-full max-w-md">
+  <h1 class="text-2xl font-bold mb-4 text-center">Buscar Canal do YouTube</h1>
 
-    async function buscarCanal() {
-      const url = document.getElementById("canal_url").value.trim();
-      const status = document.getElementById("status");
-      status.textContent = "🔄 Iniciando busca para URL: " + url;
+  <input id="urlInput" type="text" placeholder="https://www.youtube.com/@GranCursosOAB" class="border p-2 rounded w-full mb-4">
+  <button onclick="buscarCanal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">🔎 Buscar Canal</button>
 
-      if (!url.includes("youtube.com")) {
-        status.textContent = "❌ URL inválida.";
-        return;
-      }
+  <div id="resultado" class="mt-4 text-center"></div>
+</div>
 
-      let username = "";
-      if (url.includes("@")) {
-        username = url.split("@")[1];
-      } else if (url.includes("channel/")) {
-        const channelId = url.split("channel/")[1];
-        carregarDadosDoCanal(channelId);
-        return;
-      }
+<script>
+const apiKey = 'AIzaSyC4Hq-5MQNh21c0-yMJq0vOrFvyJRD_bg0'; // Sua nova API Key
 
-      if (!username) {
-        status.textContent = "❌ Não foi possível extrair username.";
-        return;
-      }
+async function buscarCanal() {
+  const input = document.getElementById('urlInput').value.trim();
+  const resultado = document.getElementById('resultado');
+  resultado.innerHTML = '🔄 Buscando...';
 
-      try {
-        status.textContent = "🔎 Buscando via forUsername: " + username;
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&forUsername=${username}&key=${apiKey}`);
-        const json = await res.json();
-
-        if (json.items && json.items.length > 0) {
-          const channelId = json.items[0].id;
-          carregarDadosDoCanal(channelId);
-        } else {
-          status.textContent = "⚠️ Não encontrado via forUsername. Tentando via fallback...";
-          buscarFallback(username);
-        }
-      } catch (error) {
-        status.textContent = "❌ Erro na busca: " + error;
-      }
+  try {
+    let username = '';
+    if (input.includes('@')) {
+      username = input.split('@')[1];
+      if (username.includes('/')) username = username.split('/')[0];
+    } else {
+      resultado.innerHTML = '❌ URL inválida. Cole o link do YouTube.';
+      return;
     }
 
-    async function buscarFallback(query) {
-      const status = document.getElementById("status");
-      try {
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${query}&key=${apiKey}`);
-        const json = await res.json();
+    // Busca via Search
+    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${username}&key=${apiKey}`;
+    const searchRes = await fetch(searchUrl);
+    const searchData = await searchRes.json();
 
-        if (json.items && json.items.length > 0) {
-          const channelId = json.items[0].snippet.channelId || json.items[0].id.channelId;
-          carregarDadosDoCanal(channelId);
-        } else {
-          status.textContent = "⚠️ Não encontrado via fallback.";
-        }
-      } catch (error) {
-        status.textContent = "❌ Erro no fallback: " + error;
-      }
+    if (!searchData.items || searchData.items.length === 0) {
+      resultado.innerHTML = '⚠️ Canal não encontrado.';
+      return;
     }
 
-    async function carregarDadosDoCanal(channelId) {
-      const status = document.getElementById("status");
-      try {
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`);
-        const json = await res.json();
+    const channelId = searchData.items[0].snippet.channelId || searchData.items[0].id.channelId;
 
-        if (json.items && json.items.length > 0) {
-          const canal = json.items[0];
-          status.innerHTML = `✅ Canal encontrado:<br><strong>${canal.snippet.title}</strong><br>👥 ${parseInt(canal.statistics.subscriberCount).toLocaleString()} inscritos<br>🎬 ${parseInt(canal.statistics.videoCount).toLocaleString()} vídeos<br>👁️ ${parseInt(canal.statistics.viewCount).toLocaleString()} visualizações`;
-        } else {
-          status.textContent = "⚠️ Canal não encontrado.";
-        }
-      } catch (error) {
-        status.textContent = "❌ Erro ao carregar canal: " + error;
-      }
+    // Busca detalhes do canal
+    const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`;
+    const channelRes = await fetch(channelUrl);
+    const channelData = await channelRes.json();
+
+    if (!channelData.items || channelData.items.length === 0) {
+      resultado.innerHTML = '⚠️ Detalhes do canal não encontrados.';
+      return;
     }
 
-    function buscarManual() {
-      const id = document.getElementById("manual_input").value.trim();
-      if (id) {
-        carregarDadosDoCanal(id);
-      }
-    }
-  </script>
+    const canal = channelData.items[0];
+    resultado.innerHTML = `
+      <div class="mt-4">
+        <h2 class="text-xl font-semibold">@${canal.snippet.customUrl || canal.snippet.title}</h2>
+        <p>👥 ${parseInt(canal.statistics.subscriberCount).toLocaleString()} inscritos</p>
+        <p>🎥 ${parseInt(canal.statistics.videoCount).toLocaleString()} vídeos</p>
+        <p>👁️ ${parseInt(canal.statistics.viewCount).toLocaleString()} visualizações</p>
+      </div>
+    `;
+  } catch (error) {
+    console.error('Erro ao buscar:', error);
+    resultado.innerHTML = '❌ Erro ao buscar canal. Tente novamente.';
+  }
+}
+</script>
+
 </body>
 </html>
