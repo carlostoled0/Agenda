@@ -1,0 +1,106 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel Canal - Busca</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-4">
+
+  <div class="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
+    <h1 class="text-2xl font-bold text-center mb-4">Buscar Canal do YouTube</h1>
+
+    <div class="space-y-4">
+      <input id="urlInput" type="text" placeholder="Cole a URL do canal..." class="w-full p-2 border rounded">
+      <button onclick="buscarCanal()" class="w-full bg-blue-600 text-white p-2 rounded hover:bg-blue-700">🔎 Buscar Canal</button>
+      <p id="statusMsg" class="text-center text-gray-600 text-sm"></p>
+
+      <div id="dadosCanal" class="hidden mt-4 text-center space-y-2">
+        <p id="nomeCanal" class="font-semibold"></p>
+        <p id="inscritos"></p>
+        <p id="visualizacoes"></p>
+        <p id="videos"></p>
+      </div>
+
+      <div id="fallback" class="hidden mt-4 space-y-2">
+        <p class="text-red-500 text-center">⚠️ Canal não encontrado. Insira o Channel ID:</p>
+        <input id="idInput" type="text" placeholder="Cole o Channel ID..." class="w-full p-2 border rounded">
+        <button onclick="buscarCanalPorID()" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">🔄 Buscar Manualmente</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const apiKey = "AIzaSyC4Hq-5MQNh21c0-yMJq0vOrFvyJRD_bg0";
+
+    async function buscarCanal() {
+      const url = document.getElementById('urlInput').value.trim();
+      const statusMsg = document.getElementById('statusMsg');
+      const dadosCanal = document.getElementById('dadosCanal');
+      const fallback = document.getElementById('fallback');
+      
+      dadosCanal.classList.add('hidden');
+      fallback.classList.add('hidden');
+      statusMsg.innerText = "Carregando...";
+
+      let channelId = "";
+
+      if (url.includes("/channel/")) {
+        channelId = url.split("/channel/")[1];
+      } else if (url.includes("@")) {
+        const nomeUsuario = url.split("@")[1];
+        try {
+          const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${nomeUsuario}&key=${apiKey}`);
+          const buscaJson = await busca.json();
+          channelId = buscaJson.items?.[0]?.id?.channelId || null;
+        } catch {
+          channelId = null;
+        }
+      }
+
+      if (channelId) {
+        carregarDados(channelId);
+      } else {
+        statusMsg.innerText = "⚠️ Canal não encontrado.";
+        fallback.classList.remove('hidden');
+      }
+    }
+
+    async function buscarCanalPorID() {
+      const id = document.getElementById('idInput').value.trim();
+      if (id) carregarDados(id);
+    }
+
+    async function carregarDados(channelId) {
+      const statusMsg = document.getElementById('statusMsg');
+      const dadosCanal = document.getElementById('dadosCanal');
+
+      try {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`);
+        const json = await res.json();
+        const canal = json.items?.[0];
+
+        if (canal) {
+          document.getElementById('nomeCanal').innerText = `@${canal.snippet.customUrl || canal.snippet.title}`;
+          document.getElementById('inscritos').innerText = `${parseInt(canal.statistics.subscriberCount).toLocaleString()} inscritos`;
+          document.getElementById('visualizacoes').innerText = `${parseInt(canal.statistics.viewCount).toLocaleString()} visualizações`;
+          document.getElementById('videos').innerText = `${parseInt(canal.statistics.videoCount).toLocaleString()} vídeos`;
+          
+          statusMsg.innerText = "";
+          dadosCanal.classList.remove('hidden');
+        } else {
+          statusMsg.innerText = "⚠️ Canal não encontrado.";
+        }
+      } catch (error) {
+        statusMsg.innerText = "⚠️ Erro ao carregar dados do canal.";
+      }
+    }
+  </script>
+
+</body>
+</html>
