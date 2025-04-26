@@ -1,77 +1,85 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Painel Canal Inteligente</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+  <div class="bg-white p-8 rounded shadow-md w-full max-w-md text-center">
+    <h1 class="text-2xl font-bold mb-6">Buscar Canal do YouTube</h1>
+    <input id="canal_url" type="url" placeholder="https://www.youtube.com/@username" class="border p-2 w-full rounded mb-4">
+    <button onclick="buscarCanal()" class="bg-blue-600 text-white w-full py-2 rounded mb-4">🔎 Buscar Canal</button>
+    <div id="resultado" class="text-sm text-gray-700"></div>
+  </div>
 
-<div class="bg-white p-8 rounded shadow-md w-full max-w-md">
-  <h1 class="text-2xl font-bold mb-4 text-center">Buscar Canal do YouTube</h1>
+  <script>
+    async function buscarCanal() {
+      const input = document.getElementById('canal_url').value.trim();
+      const resultado = document.getElementById('resultado');
+      const apiKey = "AIzaSyC4Hq-5MQNh21c0-yMJq0vOrFvyJRD_bg0";
 
-  <input id="urlInput" type="text" placeholder="https://www.youtube.com/@GranCursosOAB" class="border p-2 rounded w-full mb-4">
-  <button onclick="buscarCanal()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">🔎 Buscar Canal</button>
+      if (!input.includes("youtube.com")) {
+        resultado.innerHTML = "❌ URL inválida.";
+        return;
+      }
 
-  <div id="resultado" class="mt-4 text-center"></div>
-</div>
+      let username = input.split("@")[1] || "";
+      if (username.includes("/")) username = username.split("/")[0];
 
-<script>
-const apiKey = 'AIzaSyC4Hq-5MQNh21c0-yMJq0vOrFvyJRD_bg0'; // Sua nova API Key
+      resultado.innerHTML = "⏳ Buscando...";
 
-async function buscarCanal() {
-  const input = document.getElementById('urlInput').value.trim();
-  const resultado = document.getElementById('resultado');
-  resultado.innerHTML = '🔄 Buscando...';
-
-  try {
-    let username = '';
-    if (input.includes('@')) {
-      username = input.split('@')[1];
-      if (username.includes('/')) username = username.split('/')[0];
-    } else {
-      resultado.innerHTML = '❌ URL inválida. Cole o link do YouTube.';
-      return;
+      try {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&forUsername=${username}&key=${apiKey}`);
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+          const canal = data.items[0];
+          exibirCanal(canal);
+        } else {
+          buscarFallback(username);
+        }
+      } catch (error) {
+        resultado.innerHTML = "⚠️ Erro inesperado.";
+      }
     }
 
-    // Busca via Search
-    const searchUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${username}&key=${apiKey}`;
-    const searchRes = await fetch(searchUrl);
-    const searchData = await searchRes.json();
-
-    if (!searchData.items || searchData.items.length === 0) {
-      resultado.innerHTML = '⚠️ Canal não encontrado.';
-      return;
+    async function buscarFallback(username) {
+      const resultado = document.getElementById('resultado');
+      try {
+        const res = await fetch(`https://www.youtube.com/@${username}`);
+        const html = await res.text();
+        const match = html.match(/channelId":"(UC[\w-]+)/);
+        if (match) {
+          const channelId = match[1];
+          const apiKey = "AIzaSyC4Hq-5MQNh21c0-yMJq0vOrFvyJRD_bg0";
+          const res2 = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`);
+          const data2 = await res2.json();
+          if (data2.items && data2.items.length > 0) {
+            exibirCanal(data2.items[0]);
+          } else {
+            resultado.innerHTML = "⚠️ Canal não encontrado.";
+          }
+        } else {
+          resultado.innerHTML = "⚠️ Canal não encontrado.";
+        }
+      } catch (error) {
+        resultado.innerHTML = "⚠️ Erro no fallback.";
+      }
     }
 
-    const channelId = searchData.items[0].snippet.channelId || searchData.items[0].id.channelId;
-
-    // Busca detalhes do canal
-    const channelUrl = `https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`;
-    const channelRes = await fetch(channelUrl);
-    const channelData = await channelRes.json();
-
-    if (!channelData.items || channelData.items.length === 0) {
-      resultado.innerHTML = '⚠️ Detalhes do canal não encontrados.';
-      return;
+    function exibirCanal(canal) {
+      const resultado = document.getElementById('resultado');
+      const stats = canal.statistics;
+      resultado.innerHTML = `
+        <div class="text-left">
+          <p><strong>Nome:</strong> ${canal.snippet.title}</p>
+          <p><strong>Inscritos:</strong> ${parseInt(stats.subscriberCount).toLocaleString()}</p>
+          <p><strong>Visualizações:</strong> ${parseInt(stats.viewCount).toLocaleString()}</p>
+          <p><strong>Vídeos:</strong> ${parseInt(stats.videoCount).toLocaleString()}</p>
+        </div>
+      `;
     }
-
-    const canal = channelData.items[0];
-    resultado.innerHTML = `
-      <div class="mt-4">
-        <h2 class="text-xl font-semibold">@${canal.snippet.customUrl || canal.snippet.title}</h2>
-        <p>👥 ${parseInt(canal.statistics.subscriberCount).toLocaleString()} inscritos</p>
-        <p>🎥 ${parseInt(canal.statistics.videoCount).toLocaleString()} vídeos</p>
-        <p>👁️ ${parseInt(canal.statistics.viewCount).toLocaleString()} visualizações</p>
-      </div>
-    `;
-  } catch (error) {
-    console.error('Erro ao buscar:', error);
-    resultado.innerHTML = '❌ Erro ao buscar canal. Tente novamente.';
-  }
-}
-</script>
-
+  </script>
 </body>
 </html>
