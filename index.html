@@ -81,7 +81,7 @@ async function fallbackChannelId(username) {
 async function carregarDadosDoCanal() {
   const url = localStorage.getItem("canal_url_principal") || "https://www.youtube.com/@FalaJairinho";
   const canalInfo = document.getElementById("canalInfo");
-  const apiKey = "AIzaSyC4Hq-5MQNh21c0-yMJq0vOrFvyJRD_bg0";
+  const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg";
 
   canalInfo.innerText = "🔄 Atualizando...";
 
@@ -89,7 +89,7 @@ async function carregarDadosDoCanal() {
   if (url.includes("/channel/")) {
     channelId = url.split("/channel/")[1];
   } else if (url.includes("@")) {
-    const nomeUsuario = url.split("@")[1];
+    const nomeUsuario = url.split("@")[1]; const buscaNome = `%40${nomeUsuario}`;
     const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=@${nomeUsuario}&type=channel&key=${apiKey}`);
     const buscaJson = await busca.json();
     channelId = buscaJson.items?.[0]?.snippet?.channelId || buscaJson.items?.[0]?.id?.channelId;
