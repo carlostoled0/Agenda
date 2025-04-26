@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel Canal - Busca</title>
+  <title>Painel Canal Inteligente</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     body { font-family: 'Inter', sans-serif; }
@@ -28,7 +28,7 @@
       </div>
 
       <div id="fallback" class="hidden mt-4 space-y-2">
-        <p class="text-red-500 text-center">⚠️ Canal não encontrado. Insira o Channel ID:</p>
+        <p class="text-red-500 text-center">⚠️ Canal não encontrado ou URL inválida. Insira o Channel ID:</p>
         <input id="idInput" type="text" placeholder="Cole o Channel ID..." class="w-full p-2 border rounded">
         <button onclick="buscarCanalPorID()" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">🔄 Buscar Manualmente</button>
       </div>
@@ -43,31 +43,42 @@
       const statusMsg = document.getElementById('statusMsg');
       const dadosCanal = document.getElementById('dadosCanal');
       const fallback = document.getElementById('fallback');
-      
+
       dadosCanal.classList.add('hidden');
       fallback.classList.add('hidden');
       statusMsg.innerText = "Carregando...";
 
       let channelId = "";
+      let nomeUsuario = "";
 
       if (url.includes("/channel/")) {
-        channelId = url.split("/channel/")[1];
-      } else if (url.includes("@")) {
-        const nomeUsuario = url.split("@")[1];
-        try {
-          const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${nomeUsuario}&key=${apiKey}`);
-          const buscaJson = await busca.json();
-          channelId = buscaJson.items?.[0]?.id?.channelId || null;
-        } catch {
-          channelId = null;
-        }
+        channelId = url.split("/channel/")[1].split(/[/?#]/)[0];
+      } else if (url.includes("/@")) {
+        nomeUsuario = url.split("/@")[1].split(/[/?#]/)[0];
+      } else {
+        statusMsg.innerText = "⚠️ URL inválida. Por favor, cole o link do canal.";
+        fallback.classList.remove('hidden');
+        return;
       }
 
       if (channelId) {
         carregarDados(channelId);
-      } else {
-        statusMsg.innerText = "⚠️ Canal não encontrado.";
-        fallback.classList.remove('hidden');
+      } else if (nomeUsuario) {
+        try {
+          const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${nomeUsuario}&key=${apiKey}`);
+          const buscaJson = await busca.json();
+          channelId = buscaJson.items?.[0]?.id?.channelId || null;
+
+          if (channelId) {
+            carregarDados(channelId);
+          } else {
+            statusMsg.innerText = "⚠️ Canal não encontrado.";
+            fallback.classList.remove('hidden');
+          }
+        } catch {
+          statusMsg.innerText = "⚠️ Erro na busca. Tente colar o Channel ID.";
+          fallback.classList.remove('hidden');
+        }
       }
     }
 
@@ -90,7 +101,7 @@
           document.getElementById('inscritos').innerText = `${parseInt(canal.statistics.subscriberCount).toLocaleString()} inscritos`;
           document.getElementById('visualizacoes').innerText = `${parseInt(canal.statistics.viewCount).toLocaleString()} visualizações`;
           document.getElementById('videos').innerText = `${parseInt(canal.statistics.videoCount).toLocaleString()} vídeos`;
-          
+
           statusMsg.innerText = "";
           dadosCanal.classList.remove('hidden');
         } else {
