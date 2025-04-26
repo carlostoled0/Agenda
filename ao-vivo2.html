@@ -18,7 +18,7 @@ document.addEventListener("keydown", e => {
 </head>
 <body class="bg-gray-100 text-gray-800">
 <header class="bg-white shadow-md p-4 flex items-center justify-between">
-<h1 class="text-2xl font-bold text-red-600">🔴 Live Monitoramento Dinâmico</h1>
+<h1 class="text-2xl font-bold text-red-600"> Live Monitoramento Dinâmico</h1>
 <a href="index.html" class="flex items-center text-sm text-blue-600 hover:underline">
 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -68,7 +68,7 @@ async function atualizarDadosLive() {
     const espectadores = live.liveStreamingDetails.concurrentViewers || "-";
 
     document.getElementById("statusLive").innerHTML = `
-      <p class="font-bold text-green-600">🔴 ${titulo}</p>
+      <p class="font-bold text-green-600"> ${titulo}</p>
       <p class="text-sm text-gray-600">Iniciada às ${inicio}</p>
     `;
     document.getElementById("viewersCount").innerHTML = `

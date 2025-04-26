@@ -1,4 +1,3 @@
-<!-- Atualizado no Canvas -->
 
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -21,16 +20,16 @@
 <body class="bg-gray-100 text-gray-800">
 <header class="bg-white shadow">
 <div class="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-<h1 class="text-xl font-bold text-blue-600">📊 Painel de Análise</h1>
+<h1 class="text-xl font-bold text-blue-600"> Painel de Análise</h1>
 <nav class="space-x-4">
 <a href="index.html" class="text-blue-600 hover:underline">🏠 Início</a>
-<a href="inscritos.html" class="text-blue-600 hover:underline">📈 Inscritos</a>
-<a href="visualizacoes.html" class="text-blue-600 hover:underline">📊 Visualizações</a>
+<a href="inscritos.html" class="text-blue-600 hover:underline"> Inscritos</a>
+<a href="visualizacoes.html" class="text-blue-600 hover:underline"> Visualizações</a>
 <a href="videos.html" class="text-blue-600 hover:underline">🎬 Vídeos</a>
-<a href="video.html" class="text-blue-600 hover:underline">🎥 Análise de Vídeos</a>
-<a href="roteiro.html" class="text-blue-600 hover:underline">📝 Roteirização</a>
-<a href="ao-vivo.html" class="text-blue-600 hover:underline">🔴 Ao Vivo</a>
-<a href="publicidade.html" class="text-blue-600 hover:underline">💼 Publicidade</a>
+<a href="video.html" class="text-blue-600 hover:underline"> Análise de Vídeos</a>
+<a href="roteiro.html" class="text-blue-600 hover:underline"> Roteirização</a>
+<a href="ao-vivo.html" class="text-blue-600 hover:underline"> Ao Vivo</a>
+<a href="publicidade.html" class="text-blue-600 hover:underline"> Publicidade</a>
 <span id="botaoAoVivo"></span>
 </nav>
 </div>
@@ -45,11 +44,11 @@
 <p id="msg" class="text-sm text-gray-500 mt-1"></p>
 </section>
 <section>
-<h2 class="text-lg font-semibold text-gray-700">📊 Canal em análise:</h2>
+<h2 class="text-lg font-semibold text-gray-700"> Canal em análise:</h2>
 <p id="canalInfo" class="text-blue-500 font-mono">Carregando...</p>
 </section>
 <section>
-<h2 class="text-lg font-semibold text-gray-700">📈 Evolução de Visualizações</h2>
+<h2 class="text-lg font-semibold text-gray-700"> Evolução de Visualizações</h2>
 <canvas id="chartViews"></canvas>
 </section>
 </main>
@@ -114,8 +113,8 @@ async function carregarDadosDoCanal() {
       const stats = canal.statistics;
       canalInfo.innerHTML = `
         <strong>@${canal.snippet.customUrl || canal.snippet.title}</strong><br/>
-        👥 ${parseInt(stats.subscriberCount).toLocaleString()} inscritos<br/>
-        👁️ ${parseInt(stats.viewCount).toLocaleString()} visualizações<br/>
+         ${parseInt(stats.subscriberCount).toLocaleString()} inscritos<br/>
+         ${parseInt(stats.viewCount).toLocaleString()} visualizações<br/>
         🎬 ${parseInt(stats.videoCount).toLocaleString()} vídeos
       `;
     } else {
