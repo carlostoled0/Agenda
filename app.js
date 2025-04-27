@@ -5,7 +5,6 @@ async function atualizarCanal() {
   const msg = document.getElementById("msg");
   if (input) {
     localStorage.setItem("canal_url_principal", input);
-    localStorage.setItem("canal_rede", "youtube");
     msg.innerText = "✅ Entrada salva. Atualizando painel...";
     carregarDadosDoCanal();
   } else {
@@ -37,9 +36,11 @@ async function buscarChannelIdPorVideo(videoId, apiKey) {
 async function carregarDadosDoCanal() {
   const entrada = localStorage.getItem("canal_url_principal") || "https://www.youtube.com/@FalaJairinho";
   const canalInfo = document.getElementById("canalInfo");
+  const consultaHora = document.getElementById("consultaHora");
   const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg";
 
   canalInfo.innerText = "🔄 Atualizando...";
+  consultaHora.innerText = "";
 
   let channelId = "";
   let entradaTratada = entrada.toLowerCase();
@@ -97,6 +98,9 @@ async function carregarDadosDoCanal() {
           <p><strong>Visualizações:</strong> ${parseInt(stats.viewCount).toLocaleString()}</p>
           <p><strong>Vídeos:</strong> ${parseInt(stats.videoCount).toLocaleString()}</p>
         </div>`;
+
+      const agora = new Date();
+      consultaHora.innerText = `Consulta realizada em: ${agora.toLocaleDateString()} às ${agora.toLocaleTimeString()}`;
     } else {
       canalInfo.innerText = "⚠️ Canal não encontrado.";
     }
