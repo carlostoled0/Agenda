@@ -37,7 +37,7 @@ async function carregarDadosDoCanal() {
   const entrada = localStorage.getItem("canal_url_principal") || "https://www.youtube.com/@FalaJairinho";
   const canalInfo = document.getElementById("canalInfo");
   const consultaHora = document.getElementById("consultaHora");
-  const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg";
+  const apiKey = "AIzaSyDjoiEFd5zh_Mje5WbnLj284LNx1QQ-Hqw";
 
   canalInfo.innerText = "🔄 Atualizando...";
   consultaHora.innerText = "";
