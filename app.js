@@ -39,7 +39,7 @@ async function buscarChannelIdPorVideo(videoId, apiKey) {
   }
 }
 
-// Função 3: Carregar Dados do Canal Inteligente
+// Função 3: Carregar Dados do Canal Inteligente e Profissional
 async function carregarDadosDoCanal() {
   const entrada = localStorage.getItem("canal_url_principal") || "https://www.youtube.com/@FalaJairinho";
   const canalInfo = document.getElementById("canalInfo");
@@ -85,14 +85,33 @@ async function carregarDadosDoCanal() {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`);
     const json = await res.json();
     const canal = json.items?.[0];
+
     if (canal) {
       const stats = canal.statistics;
+      const snippet = canal.snippet;
+      const avatar = snippet.thumbnails?.default?.url || "";
+      const nome = snippet.customUrl || snippet.title;
+      const descricao = snippet.description || "Sem descrição disponível.";
+      const pais = snippet.country || "País não informado";
+      const dataCriacao = new Date(snippet.publishedAt).toLocaleDateString();
+      const inscritosVisiveis = stats.hiddenSubscriberCount ? false : true;
+
       canalInfo.innerHTML = `
-        <strong>@${canal.snippet.customUrl || canal.snippet.title}</strong><br/>
-        👥 ${parseInt(stats.subscriberCount).toLocaleString()} inscritos<br/>
-        👁️ ${parseInt(stats.viewCount).toLocaleString()} visualizações<br/>
-        🎬 ${parseInt(stats.videoCount).toLocaleString()} vídeos
+        <div class="flex items-center gap-4 mb-4">
+          <img src="${avatar}" alt="Avatar" class="w-16 h-16 rounded-full">
+          <div>
+            <h3 class="text-xl font-bold">${nome}</h3>
+          </div>
+        </div>
+        <p class="text-gray-600 mb-2">${descricao.length > 150 ? descricao.substring(0, 150) + "..." : descricao}</p>
+        <p class="text-sm text-gray-500 mb-2">${pais} | Criado em: ${dataCriacao}</p>
+        <div class="mt-4 space-y-1">
+          ${inscritosVisiveis ? `<p><strong>Inscritos:</strong> ${parseInt(stats.subscriberCount).toLocaleString()}</p>` : `<p><strong>Inscritos:</strong> Oculto</p>`}
+          <p><strong>Visualizações:</strong> ${parseInt(stats.viewCount).toLocaleString()}</p>
+          <p><strong>Vídeos:</strong> ${parseInt(stats.videoCount).toLocaleString()}</p>
+        </div>
       `;
+
     } else {
       canalInfo.innerText = "⚠️ Canal não encontrado.";
     }
