@@ -1,7 +1,6 @@
 
 /* eslint-disable no-unused-vars */
-// Função 1: Atualizar Canal
-function atualizarCanal() {
+async function atualizarCanal() {
   const input = document.getElementById("canal_url").value.trim();
   const msg = document.getElementById("msg");
   if (input) {
@@ -13,18 +12,18 @@ function atualizarCanal() {
     msg.innerText = "❌ Insira uma entrada válida.";
   }
 }
-// Função 2: Fallback para obter Channel ID
+
 async function fallbackChannelId(username) {
   try {
-    const response = await fetch(`https://www.youtube.com/@${username}`);
-    const html = await response.text();
-    const match = html.match(/channelId":"(UC[\w-]+)/);
-    return match ? match[1] : null;
+    const proxyUrl = `https://proxy-carlostoledo.vercel.app/api/getChannelId?username=${username}`;
+    const response = await fetch(proxyUrl);
+    const data = await response.json();
+    return data.channelId || null;
   } catch {
     return null;
   }
 }
-// Função auxiliar para buscar Channel ID de um vídeo
+
 async function buscarChannelIdPorVideo(videoId, apiKey) {
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=snippet&id=${videoId}&key=${apiKey}`);
@@ -34,14 +33,17 @@ async function buscarChannelIdPorVideo(videoId, apiKey) {
     return null;
   }
 }
-// Função 3: Carregar Dados do Canal Inteligente e Profissional
+
 async function carregarDadosDoCanal() {
   const entrada = localStorage.getItem("canal_url_principal") || "https://www.youtube.com/@FalaJairinho";
   const canalInfo = document.getElementById("canalInfo");
   const apiKey = "AIzaSyCD27OXrL7tmgDxOg7wQLR5QmRUGJPsqFg";
+
   canalInfo.innerText = "🔄 Atualizando...";
+
   let channelId = "";
   let entradaTratada = entrada.toLowerCase();
+
   if (entradaTratada.includes("/channel/")) {
     channelId = entrada.split("/channel/")[1].split(/[/?]/)[0];
   } else if (entradaTratada.includes("/watch?v=")) {
@@ -50,6 +52,7 @@ async function carregarDadosDoCanal() {
   } else if (entradaTratada.includes("@")) {
     const nomeUsuario = entrada.split("@")[1].split(/[/?]/)[0];
     channelId = await fallbackChannelId(nomeUsuario);
+
     if (!channelId) {
       const busca = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&q=${nomeUsuario}&type=channel&key=${apiKey}`);
       const buscaJson = await busca.json();
@@ -62,14 +65,17 @@ async function carregarDadosDoCanal() {
     const buscaJson = await busca.json();
     channelId = buscaJson.items?.[0]?.snippet?.channelId || buscaJson.items?.[0]?.id?.channelId;
   }
+
   if (!channelId) {
     canalInfo.innerText = "⚠️ Canal não encontrado.";
     return;
   }
+
   try {
     const res = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${channelId}&key=${apiKey}`);
     const json = await res.json();
     const canal = json.items?.[0];
+
     if (canal) {
       const stats = canal.statistics;
       const snippet = canal.snippet;
@@ -79,6 +85,7 @@ async function carregarDadosDoCanal() {
       const pais = snippet.country || "País não informado";
       const dataCriacao = new Date(snippet.publishedAt).toLocaleDateString();
       const inscritosVisiveis = stats.hiddenSubscriberCount ? false : true;
+
       canalInfo.innerHTML = `
         <div class="flex items-center gap-4 mb-4">
           <img src="${avatar}" alt="Avatar" class="w-16 h-16 rounded-full">
@@ -98,5 +105,5 @@ async function carregarDadosDoCanal() {
     canalInfo.innerText = "❌ Erro ao conectar à API.";
   }
 }
-// Evento: Página carregada -> Carregar dados automaticamente
+
 document.addEventListener("DOMContentLoaded", carregarDadosDoCanal);
