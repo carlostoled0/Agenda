@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const API_KEY = 'AIzaSyB8XtKXTdcxhtq-OgdMaCiFy8hsUrxWQQk';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -20,7 +21,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('visualizacoes').innerText = parseInt(canal.statistics.viewCount).toLocaleString('pt-BR');
     document.getElementById('videos').innerText = canal.statistics.videoCount;
     document.getElementById('dataCriacao').innerText = new Date(canal.snippet.publishedAt).toLocaleDateString('pt-BR');
-    document.getElementById('descricao').innerText = canal.snippet.description || '';
 
   } else {
     alert('Não foi possível carregar os detalhes do canal.');
