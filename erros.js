@@ -1,4 +1,3 @@
-
 /* eslint-disable no-unused-vars */
 document.addEventListener('DOMContentLoaded', () => {
   const erro = localStorage.getItem('erroAtual');
