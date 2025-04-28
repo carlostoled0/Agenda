@@ -1,0 +1,56 @@
+<!-- Backup Oficial - detalhes.html atualizado + Embed -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalhes do Canal - Premium</title>
+  <script defer src="detalhes.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+  <header class="bg-indigo-700 text-white text-center py-6 shadow">
+    <h1 class="text-3xl font-bold">Detalhes do Canal</h1>
+    <p class="text-sm mt-1">Análise Completa e Profissional</p>
+  </header>
+  <main class="flex-1 max-w-5xl mx-auto p-6 space-y-10">
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-6 text-center">Informações do Canal</h2>
+      <div class="flex flex-col items-center">
+        <img id="fotoPerfil" src="" alt="Foto do Canal" class="w-28 h-28 rounded-full mb-4">
+        <h3 id="nomeCanal" class="text-2xl font-semibold mb-4"></h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+        <div><p class="font-bold">Inscritos</p><p id="inscritos" class="text-lg"></p></div>
+        <div><p class="font-bold">Visualizações</p><p id="visualizacoes" class="text-lg"></p></div>
+        <div><p class="font-bold">Vídeos</p><p id="videos" class="text-lg"></p></div>
+        <div><p class="font-bold">Criação</p><p id="dataCriacao" class="text-lg"></p></div>
+        <div><p class="font-bold">País</p><p id="pais" class="text-lg"></p></div>
+        <div><p class="font-bold">Média de Visualizações por Vídeo</p><p id="mediaVisualizacoes" class="text-lg"></p></div>
+      </div>
+    </section>
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-6 text-center">Atividade Recente</h2>
+      <div class="grid grid-cols-1 gap-6 text-center">
+        <div><p class="font-bold">Última Publicação</p><p id="ultimaPublicacao" class="text-lg"></p></div>
+      </div>
+      <div id="playerVideo" class="mt-6 flex justify-center"></div>
+    </section>
+    <section class="bg-white p-6 rounded-lg shadow-md">
+      <h2 class="text-2xl font-semibold mb-6 text-center">Análises Inteligentes</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-center">
+        <div><p class="font-bold">Taxa de Engajamento</p><p id="taxaEngajamento" class="text-lg"></p></div>
+        <div><p class="font-bold">Consistência de Postagem</p><p id="consistencia" class="text-lg"></p></div>
+        <div class="md:col-span-2"><p class="font-bold">Top 3 Palavras-Chave</p><p id="topPalavras" class="text-lg"></p></div>
+        <div class="md:col-span-2"><p class="font-bold">Tempo Médio dos Vídeos</p><p id="tempoMedio" class="text-lg"></p></div>
+      </div>
+    </section>
+    <div class="text-center">
+      <a href="index.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded">Voltar para Início</a>
+    </div>
+  </main>
+  <footer class="text-center text-gray-400 text-sm py-6">
+    &copy; 2025 Painel de Análise Premium. Todos os direitos reservados.
+  </footer>
+</body>
+</html>
