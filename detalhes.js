@@ -28,13 +28,15 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.getElementById('inscritos').textContent = data.inscritos || '0';
         document.getElementById('visualizacoes').textContent = data.visualizacoes || '0';
         document.getElementById('videos').textContent = data.videos || '0';
-
-        if (data.visualizacoes && data.videos) {
-            const media = parseInt(data.visualizacoes) / parseInt(data.videos);
-            document.getElementById('mediaVisualizacoes').textContent = Math.round(media).toLocaleString('pt-BR');
-        } else {
-            document.getElementById('mediaVisualizacoes').textContent = 'Não disponível';
-        }
+        document.getElementById('pais').textContent = data.pais || 'Não informado';
+        document.getElementById('data-criacao').textContent = data.dataCriacao || 'Não informado';
+        document.getElementById('media-visualizacoes').textContent = data.mediaVisualizacoes || '0';
+        document.getElementById('ultima-publicacao').textContent = data.ultimaPublicacao || 'Não informado';
+        document.getElementById('frequencia-postagem').textContent = data.frequenciaPostagem || 'Não informado';
+        document.getElementById('taxa-engajamento').textContent = data.taxaEngajamento || '0%';
+        document.getElementById('consistencia').textContent = data.consistencia || 'Não informado';
+        document.getElementById('top-palavras').textContent = data.topPalavras || 'Não informado';
+        document.getElementById('tempo-videos').textContent = data.tempoVideos || 'Não informado';
 
     } catch (error) {
         console.error(error);
