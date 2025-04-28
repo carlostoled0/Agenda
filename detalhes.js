@@ -1,5 +1,7 @@
+
 /* eslint-disable no-unused-vars */
-const API_KEY = 'AIzaSyB8XtKXTdcxhtq-OgdMaCiFy8hsUrxWQQk';
+
+const API_MAKE_URL = 'https://hook.us2.make.com/jrm8c4yl1av3e1ye8q68id1iqvphwwqr';
 
 document.addEventListener('DOMContentLoaded', async () => {
   const canalId = localStorage.getItem('canalId');
@@ -9,21 +11,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
 
-  const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${canalId}&key=${API_KEY}`);
-  const data = await response.json();
+  try {
+    const response = await fetch(API_MAKE_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ canalId })
+    });
 
-  if (data.items && data.items.length > 0) {
-    const canal = data.items[0];
+    if (!response.ok) {
+      throw new Error('Erro ao chamar o webhook Make.');
+    }
 
-    document.getElementById('fotoPerfil').src = canal.snippet.thumbnails.default.url;
-    document.getElementById('nomeCanal').innerText = canal.snippet.title;
-    document.getElementById('inscritos').innerText = parseInt(canal.statistics.subscriberCount).toLocaleString('pt-BR');
-    document.getElementById('visualizacoes').innerText = parseInt(canal.statistics.viewCount).toLocaleString('pt-BR');
-    document.getElementById('videos').innerText = canal.statistics.videoCount;
-    document.getElementById('dataCriacao').innerText = new Date(canal.snippet.publishedAt).toLocaleDateString('pt-BR');
+    const data = await response.json();
 
-  } else {
-    alert('Não foi possível carregar os detalhes do canal.');
+    // Dados básicos do canal
+    document.getElementById('fotoPerfil').src = data.fotoPerfil;
+    document.getElementById('nomeCanal').innerText = data.nomeCanal;
+    document.getElementById('inscritos').innerText = data.inscritos;
+    document.getElementById('visualizacoes').innerText = data.visualizacoes;
+    document.getElementById('videos').innerText = data.videos;
+    document.getElementById('dataCriacao').innerText = data.dataCriacao;
+    document.getElementById('pais').innerText = data.pais || '-';
+    document.getElementById('mediaVisualizacoes').innerText = data.mediaVisualizacoes;
+
+    // Análises inteligentes
+    document.getElementById('ultimaPublicacao').innerText = data.ultimaPublicacao;
+    document.getElementById('frequenciaPostagem').innerText = data.frequenciaPostagem;
+    document.getElementById('taxaEngajamento').innerText = data.taxaEngajamento;
+    document.getElementById('consistencia').innerText = data.consistencia;
+    document.getElementById('topPalavras').innerText = data.topPalavras;
+    document.getElementById('tempoMedio').innerText = data.tempoMedio;
+
+  } catch (error) {
+    console.error('Erro:', error);
+    alert('Erro ao carregar os detalhes do canal.');
     window.location.href = 'index.html';
   }
 });
