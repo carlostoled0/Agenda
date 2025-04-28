@@ -1,24 +1,35 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Painel de Análise de Canal</title>
-  <script defer src="apiKeys.js"></script>
-  <script defer src="app.js"></script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Análise de Canal</title>
+    <script defer src="apiKeys.js"></script>
+    <script defer src="app.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100 min-h-screen flex flex-col justify-center items-center">
-  <header class="bg-blue-700 w-full py-4 text-center text-white">
+<header class="bg-blue-700 w-full py-4 text-center text-white">
     <h1 class="text-2xl font-bold">Painel de Análise de Canal</h1>
-  </header>
-  <main class="flex flex-col items-center p-6 space-y-6">
-    <input id="inputUrl" class="border p-3 rounded w-2/3" placeholder="Cole a URL do canal YouTube">
+</header>
+<main class="flex flex-col items-center p-6 space-y-6">
+    <input id="inputUrl" class="border p-3 rounded w-2/3" placeholder="Cole a URL do canal do YouTube">
     <button id="btnBuscar" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded">Analisar</button>
-    <section id="resultado" class="hidden w-full max-w-2xl bg-white p-6 rounded-lg shadow-md text-center space-y-4"></section>
-  </main>
-  <footer class="text-center text-gray-400 text-sm py-6 w-full">
+    <section id="resultado" class="hidden w-full max-w-2xl bg-white p-6 rounded-lg shadow-md text-center space-y-4">
+        <img id="fotoPerfil" class="mx-auto mb-4 rounded-full" alt="Foto do Canal">
+        <h2 id="nomeCanal" class="text-2xl font-bold"></h2>
+        <p id="descricao" class="text-gray-600"></p>
+        <div class="space-y-2">
+            <p><strong>Inscritos:</strong> <span id="inscritos"></span></p>
+            <p><strong>Visualizações:</strong> <span id="visualizacoes"></span></p>
+            <p><strong>Vídeos:</strong> <span id="videos"></span></p>
+            <p><strong>Data de Criação:</strong> <span id="dataCriacao"></span></p>
+        </div>
+        <button onclick="irParaDetalhes()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded mt-4">Ver Mais Detalhes</button>
+    </section>
+</main>
+<footer class="text-center text-gray-400 text-sm py-6 w-full">
     &copy; 2025 Painel Premium Ultra
-  </footer>
+</footer>
 </body>
 </html>
