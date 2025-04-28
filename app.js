@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 const API_KEY = 'AIzaSyB8XtKXTdcxhtq-OgdMaCiFy8hsUrxWQQk';
 
 document.getElementById('btnBuscar').addEventListener('click', async () => {
@@ -12,13 +13,23 @@ document.getElementById('btnBuscar').addEventListener('click', async () => {
     channelId = inputUrl.split('/channel/')[1].split('?')[0];
   } else if (inputUrl.includes('@')) {
     const username = inputUrl.split('@')[1].split('/')[0];
+
     const searchResponse = await fetch(`https://www.googleapis.com/youtube/v3/search?part=snippet&type=channel&q=${username}&key=${API_KEY}`);
     const searchData = await searchResponse.json();
+
     if (searchData.items && searchData.items.length > 0) {
       channelId = searchData.items[0].snippet.channelId || searchData.items[0].id.channelId;
     } else {
-      alert('Canal não encontrado pelo username.');
-      return;
+      // Tentar buscar diretamente pelo username
+      const channelResponse = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=id&forUsername=${username}&key=${API_KEY}`);
+      const channelData = await channelResponse.json();
+
+      if (channelData.items && channelData.items.length > 0) {
+        channelId = channelData.items[0].id;
+      } else {
+        alert('Canal não encontrado pelo username.');
+        return;
+      }
     }
   } else {
     alert('Formato de URL inválido para canal.');
