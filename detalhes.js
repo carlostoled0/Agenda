@@ -22,6 +22,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('videos').innerText = canal.statistics.videoCount;
     document.getElementById('dataCriacao').innerText = new Date(canal.snippet.publishedAt).toLocaleDateString('pt-BR');
 
+    // Atualizações: País e Média de Visualizações
+    document.getElementById('pais').innerText = canal.snippet.country || 'Não informado';
+    const media = parseInt(canal.statistics.viewCount) / parseInt(canal.statistics.videoCount);
+    document.getElementById('mediaVisualizacoes').innerText = Math.round(media).toLocaleString('pt-BR');
+
   } else {
     alert('Não foi possível carregar os detalhes do canal.');
     window.location.href = 'index.html';
