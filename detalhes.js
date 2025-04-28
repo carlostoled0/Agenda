@@ -1,58 +1,45 @@
 
-/* eslint-disable no-unused-vars */
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const canalId = urlParams.get('canal');
 
-document.addEventListener('DOMContentLoaded', function () {
-  const canalId = localStorage.getItem('canalId');
+        if (!canalId) {
+            alert('ID do canal não fornecido.');
+            return;
+        }
 
-  if (!canalId) {
-    alert('Nenhum canal ID encontrado.');
-    return;
-  }
+        const response = await fetch('https://hook.us2.make.com/jrm8c4yl1iav3e1ye8q86di1iqvphwww', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ canalId })
+        });
 
-  fetch('https://hook.us2.make.com/jrm8c4yl1lav3e1ye8q86di1iqvphwww', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ canalId: canalId })
-  })
-    .then(response => response.json())
-    .then(data => {
-      if (!data || !data.snippet) {
+        if (!response.ok) {
+            throw new Error('Erro na resposta do servidor');
+        }
+
+        const data = await response.json();
+
+        document.getElementById('nome-canal').textContent = data.nome || 'Não informado';
+        document.getElementById('foto-canal').src = data.foto || '';
+        document.getElementById('inscritos').textContent = data.inscritos || '0';
+        document.getElementById('visualizacoes').textContent = data.visualizacoes || '0';
+        document.getElementById('videos').textContent = data.videos || '0';
+        document.getElementById('pais').textContent = data.pais || 'Não informado';
+        document.getElementById('data-criacao').textContent = data.dataCriacao || 'Não informado';
+        document.getElementById('media-visualizacoes').textContent = data.mediaVisualizacoes || '0';
+        document.getElementById('ultima-publicacao').textContent = data.ultimaPublicacao || 'Não informado';
+        document.getElementById('frequencia-postagem').textContent = data.frequenciaPostagem || 'Não informado';
+        document.getElementById('taxa-engajamento').textContent = data.taxaEngajamento || '0%';
+        document.getElementById('consistencia').textContent = data.consistencia || 'Não informado';
+        document.getElementById('top-palavras').textContent = data.topPalavras || 'Não informado';
+        document.getElementById('tempo-videos').textContent = data.tempoVideos || 'Não informado';
+
+    } catch (error) {
+        console.error(error);
         alert('Erro ao carregar os detalhes do canal.');
-        return;
-      }
-
-      document.getElementById('fotoPerfil').src = data.snippet.thumbnails.high.url;
-      document.getElementById('nomeCanal').textContent = data.snippet.title || '-';
-      document.getElementById('inscritos').textContent = data.statistics.subscriberCount || '-';
-      document.getElementById('visualizacoes').textContent = data.statistics.viewCount || '-';
-      document.getElementById('qtdVideos').textContent = data.statistics.videoCount || '-';
-      document.getElementById('pais').textContent = data.snippet.country || '-';
-      document.getElementById('mediaVisualizacoes').textContent = calcularMedia(data.statistics) || '-';
-      document.getElementById('criadoEm').textContent = formatarData(data.snippet.publishedAt) || '-';
-      document.getElementById('ultimaPublicacao').textContent = formatarData(data.lastVideoDate) || '-';
-      document.getElementById('frequenciaPostagem').textContent = data.frequenciaPostagem || '-';
-      document.getElementById('taxaEngajamento').textContent = data.taxaEngajamento || '-';
-      document.getElementById('consistencia').textContent = data.consistencia || '-';
-      document.getElementById('topPalavras').textContent = data.topPalavrasChave || '-';
-      document.getElementById('tempoVideos').textContent = data.tempoMedioVideos || '-';
-    })
-    .catch(error => {
-      console.error('Erro ao buscar detalhes:', error);
-      alert('Erro ao carregar os detalhes do canal.');
-    });
+    }
 });
-
-function calcularMedia(statistics) {
-  const views = parseInt(statistics.viewCount, 10);
-  const videos = parseInt(statistics.videoCount, 10);
-  if (!views || !videos) return '-';
-  return Math.round(views / videos).toLocaleString();
-}
-
-function formatarData(dataISO) {
-  if (!dataISO) return '-';
-  const data = new Date(dataISO);
-  return data.toLocaleDateString('pt-BR');
-}
