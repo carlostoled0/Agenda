@@ -1,29 +1,43 @@
-/* eslint-disable no-unused-vars */
-const API_KEY = 'AIzaSyB8XtKXTdcxhtq-OgdMaCiFy8hsUrxWQQk';
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const canalId = localStorage.getItem('canalId');
-  if (!canalId) {
-    alert('Nenhum ID de canal encontrado. Volte e faça a análise primeiro.');
-    window.location.href = 'index.html';
-    return;
-  }
+    try {
+        const urlParams = new URLSearchParams(window.location.search);
+        const canalId = urlParams.get('canal');
 
-  const response = await fetch(`https://www.googleapis.com/youtube/v3/channels?part=snippet,statistics&id=${canalId}&key=${API_KEY}`);
-  const data = await response.json();
+        if (!canalId) {
+            alert('ID do canal não fornecido.');
+            return;
+        }
 
-  if (data.items && data.items.length > 0) {
-    const canal = data.items[0];
+        const response = await fetch('https://hook.us2.make.com/jrm8c4yl1iav3e1ye8q86di1iqvphwww', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ canalId })
+        });
 
-    document.getElementById('fotoPerfil').src = canal.snippet.thumbnails.default.url;
-    document.getElementById('nomeCanal').innerText = canal.snippet.title;
-    document.getElementById('inscritos').innerText = parseInt(canal.statistics.subscriberCount).toLocaleString('pt-BR');
-    document.getElementById('visualizacoes').innerText = parseInt(canal.statistics.viewCount).toLocaleString('pt-BR');
-    document.getElementById('videos').innerText = canal.statistics.videoCount;
-    document.getElementById('dataCriacao').innerText = new Date(canal.snippet.publishedAt).toLocaleDateString('pt-BR');
+        if (!response.ok) {
+            throw new Error('Erro na resposta do servidor');
+        }
 
-  } else {
-    alert('Não foi possível carregar os detalhes do canal.');
-    window.location.href = 'index.html';
-  }
+        const data = await response.json();
+
+        document.getElementById('nome-canal').textContent = data.nome || 'Não informado';
+        document.getElementById('foto-canal').src = data.foto || '';
+        document.getElementById('inscritos').textContent = data.inscritos || '0';
+        document.getElementById('visualizacoes').textContent = data.visualizacoes || '0';
+        document.getElementById('videos').textContent = data.videos || '0';
+
+        if (data.visualizacoes && data.videos) {
+            const media = parseInt(data.visualizacoes) / parseInt(data.videos);
+            document.getElementById('mediaVisualizacoes').textContent = Math.round(media).toLocaleString('pt-BR');
+        } else {
+            document.getElementById('mediaVisualizacoes').textContent = 'Não disponível';
+        }
+
+    } catch (error) {
+        console.error(error);
+        alert('Erro ao carregar os detalhes do canal.');
+    }
 });
