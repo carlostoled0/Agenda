@@ -10,7 +10,7 @@
 <body class="bg-gray-100 min-h-screen flex flex-col justify-between">
   <header class="bg-blue-700 text-white py-6 text-center shadow">
     <h1 class="text-2xl font-bold">Painel de Análise de Canal</h1>
-    <p class="text-sm mt-1">Coloque a URL do canal e visualize os dados reais</p>
+    <p class="text-sm mt-1">Cole a URL do canal e visualize dados reais</p>
   </header>
 
   <main class="max-w-3xl mx-auto mt-10 p-6 flex-1">
@@ -24,9 +24,9 @@
         <img id="fotoPerfil" src="" alt="Foto do Canal" class="w-24 h-24 rounded-full mb-4">
         <h2 id="nomeCanal" class="text-xl font-semibold mb-4"></h2>
         <ul class="text-gray-700 space-y-2 text-center">
-          <li><strong>Inscritos:</strong> <span id="inscritos"></span></li>
-          <li><strong>Visualizações Totais:</strong> <span id="visualizacoes"></span></li>
-          <li><strong>Vídeos Publicados:</strong> <span id="videos"></span></li>
+          <li><strong>Inscritos:</strong> <span id="inscritos" onclick="window.location.href='inscritos.html'" class="cursor-pointer text-blue-600 underline"></span></li>
+          <li><strong>Visualizações Totais:</strong> <span id="visualizacoes" onclick="window.location.href='visualizacoes.html'" class="cursor-pointer text-blue-600 underline"></span></li>
+          <li><strong>Vídeos Publicados:</strong> <span id="videos" onclick="window.location.href='videos.html'" class="cursor-pointer text-blue-600 underline"></span></li>
           <li><strong>Data de Criação:</strong> <span id="dataCriacao"></span></li>
         </ul>
         <div class="mt-6">
