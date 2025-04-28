@@ -1,0 +1,28 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Painel de Erros</title>
+  <script defer src="erros.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col justify-center items-center text-center">
+  <header class="bg-red-600 text-white py-6 w-full shadow">
+    <h1 class="text-2xl font-bold">Painel de Diagnóstico de Erros</h1>
+  </header>
+  <main class="flex-1 p-6 w-full max-w-2xl">
+    <div class="bg-white p-8 rounded-lg shadow-lg">
+      <h2 class="text-xl font-semibold mb-4">Erro detectado:</h2>
+      <div id="mensagemErro" class="text-red-600 text-lg break-words"></div>
+    </div>
+    <div class="mt-8">
+      <a href="index.html" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Voltar ao Início</a>
+    </div>
+  </main>
+  <footer class="text-gray-400 text-sm py-6">
+    &copy; 2025 Painel de Diagnóstico Premium
+  </footer>
+</body>
+</html>
