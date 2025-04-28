@@ -3,28 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Diagnóstico da API - Painel</title>
-  <script defer src="debug.js"></script>
+  <title>Início - Painel Premium</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script defer src="app.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex flex-col justify-between">
-  <header class="bg-blue-700 text-white py-6 text-center shadow">
-    <h1 class="text-2xl font-bold">Diagnóstico de Comunicação com API do YouTube</h1>
-  </header>
-  <main class="max-w-4xl mx-auto mt-10 p-6 flex-1">
-    <div class="flex justify-center mb-8">
-      <input id="inputCanal" type="text" placeholder="Cole a URL do canal ou nome de usuário (@username)" class="border border-gray-300 p-3 w-2/3 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-300">
-      <button id="btnTestar" class="bg-green-600 text-white px-6 rounded-r-md hover:bg-green-700">Testar</button>
-    </div>
-    <section id="resultado" class="hidden">
-      <div class="bg-white p-6 rounded-lg shadow-md">
-        <h2 class="text-xl font-semibold mb-4">Resultado Bruto:</h2>
-        <pre id="saida" class="bg-gray-900 text-green-400 p-4 rounded overflow-x-auto text-sm"></pre>
-      </div>
-    </section>
-  </main>
-  <footer class="text-center text-gray-400 text-sm py-6">
-    &copy; 2025 Painel de Análise Profissional - Diagnóstico.
-  </footer>
+<body class="bg-gray-100 min-h-screen flex flex-col items-center justify-center p-6">
+  <h1 class="text-3xl font-bold mb-6">Análise YouTube</h1>
+  <input id="inputUrl" type="text" placeholder="Cole a URL do Canal ou Vídeo" class="border border-gray-300 p-3 w-full max-w-md rounded-md mb-6">
+  <div class="flex gap-4">
+    <button onclick="salvarUrlERedirecionar('canal.html')" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700">Ver Canal</button>
+    <button onclick="salvarUrlERedirecionar('video.html')" class="bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700">Ver Vídeo</button>
+  </div>
 </body>
 </html>
