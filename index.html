@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login com Google - Canal YouTube</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 flex items-center justify-center min-h-screen">
+  <div id="login-section" class="bg-white p-10 rounded-xl shadow-lg text-center">
+    <h1 class="text-2xl font-bold mb-4">🔐 Login com Google (YouTube OAuth)</h1>
+    <a href="/api/login">
+      <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg text-lg">
+        Fazer login com Google
+      </button>
+    </a>
+  </div>
+
+  <div id="dashboard" class="hidden bg-white p-10 rounded-xl shadow-lg text-center max-w-md">
+    <img id="avatar" src="" alt="Avatar do canal" class="w-24 h-24 mx-auto rounded-full mb-4">
+    <h2 id="title" class="text-xl font-bold mb-2"></h2>
+    <p id="description" class="text-gray-700 mb-4 text-sm italic"></p>
+    <div class="text-left space-y-1">
+      <p><strong>📈 Visualizações:</strong> <span id="views"></span></p>
+      <p><strong>👥 Inscritos:</strong> <span id="subscribers"></span></p>
+      <p><strong>🎬 Vídeos:</strong> <span id="videos"></span></p>
+    </div>
+  </div>
+
+  <script>
+    async function fetchUserData() {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has('code')) {
+        document.getElementById('login-section').classList.add('hidden');
+        try {
+          const response = await fetch('/api/oauth2callback?' + urlParams.toString());
+          const data = await response.json();
+          const canal = data.items[0];
+
+          document.getElementById('dashboard').classList.remove('hidden');
+          document.getElementById('avatar').src = canal.snippet.thumbnails.default.url;
+          document.getElementById('title').textContent = canal.snippet.title;
+          document.getElementById('description').textContent = canal.snippet.description || "Descrição não informada";
+          document.getElementById('views').textContent = parseInt(canal.statistics.viewCount).toLocaleString('pt-BR');
+          document.getElementById('subscribers').textContent = parseInt(canal.statistics.subscriberCount).toLocaleString('pt-BR');
+          document.getElementById('videos').textContent = parseInt(canal.statistics.videoCount).toLocaleString('pt-BR');
+        } catch (err) {
+          alert("Erro ao carregar dados do canal.");
+          console.error(err);
+        }
+      }
+    }
+    window.onload = fetchUserData;
+  </script>
+</body>
+</html>
